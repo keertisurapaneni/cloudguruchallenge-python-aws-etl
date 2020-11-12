@@ -1,6 +1,6 @@
 # https://github.com/qtangs/sample-aws-lambda-layer/blob/master/serverless.yaml
 
-service: CGC-python-etl
+service: CGC-etl
 
 frameworkVersion: '2'
 
@@ -24,9 +24,9 @@ plugins:
 
 # AWS Lambda Layers
 layers:
-  python3:
+  pythonEtl:
     path: layers
-    name: ${self:service}-Python-Layer
+    name: ${self:service}
     description: Lambda dependencies for Python
     compatibleRuntimes:
       - python3.6
@@ -53,7 +53,7 @@ functions:
       db_table: covid19_stats
       sns_topic: !Ref NotifySNS
     layers:
-      - {Ref: Python3LambdaLayer} # Note the reference name is always the CamelCase version of the layer name with LambdaLayer suffix.
+      - {Ref: PythonEtlLambdaLayer} # Note the reference name is always the CamelCase version of the layer name with LambdaLayer suffix.
     events:
       - schedule:
           name: ${self:service}
