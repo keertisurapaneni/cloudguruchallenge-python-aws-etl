@@ -1,7 +1,7 @@
 #  Terraform does not create this resource, but instead "adopts" it into management
 resource "aws_default_vpc" "default" {
   tags = {
-    Name = "Default_VPC"
+    Name = "Default VPC"
   }
 }
 
