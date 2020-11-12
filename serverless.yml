@@ -1,0 +1,85 @@
+# https://github.com/qtangs/sample-aws-lambda-layer/blob/master/serverless.yaml
+
+service: CGC-python-etl
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.7
+  #profile: serverless-admin
+  region: us-east-1
+  stage: dev
+  memorySize: 512 # optional, in MB, default is 1024
+  timeout: 30
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sns:publish
+      Resource:
+        - !Ref NotifySNS
+
+plugins:
+  - serverless-iam-roles-per-function
+
+# AWS Lambda Layers
+layers:
+  python3:
+    path: layers
+    name: ${self:service}-Python-Layer
+    description: Lambda dependencies for Python
+    compatibleRuntimes:
+      - python3.6
+      - python3.7
+      - python3.8
+
+
+# AWS lambda function
+functions:
+  main: # Mention the function name here # This results in function name: ${self:service}-${self:provider.stage}-function_name
+    handler: lambda_function.main # file_name.function_name
+    # iamRoleStatements are meant to be provided at provider level, but to provide it at function level can use the plugin serverless-iam-roles-per-function
+    # https://www.orangejellyfish.com/blog/serverless-and-the-principle-of-least-privilege/
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ssm:GetParameter
+        Resource:
+          - arn:aws:ssm:us-east-1:042713145414:parameter/database/covid19/*
+    onError: !Ref NotifySNS
+    environment:
+      ny_url: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv
+      jh_url: https://raw.githubusercontent.com/datasets/covid-19/master/data/time-series-19-covid-combined.csv?opt_id=oeu1603289369465r0.029250972293521915
+      db_table: covid19_stats
+      sns_topic: !Ref NotifySNS
+    layers:
+      - {Ref: Python3LambdaLayer} # Note the reference name is always the CamelCase version of the layer name with LambdaLayer suffix.
+    events:
+      - schedule:
+          name: ${self:service}
+          description: Insert data into the db table every 24 hours
+          rate: cron(0 21 * * ? *)
+
+
+# Global package to create the lambda zip
+package:
+  exclude:
+    - terraform/**
+    - layers/**
+    - package.json
+    - package-lock.json
+    - README.md
+    - quicksights_dashboard.pdf
+  individually: true
+
+
+# Custom configuration of all resources including Lambda Function, IAM Role, S3 Bucket, ...
+resources:
+  Resources:
+    NotifySNS:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: Notify_keerti
+        Subscription:
+          - Endpoint: "keertisurapaneni@gmail.com"
+            Protocol: email

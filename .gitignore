@@ -1,0 +1,6 @@
+__pycache__
+.idea
+lambda_test.py
+venv
+terraform/.terraform
+.serverless
