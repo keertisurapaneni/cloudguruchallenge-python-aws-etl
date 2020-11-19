@@ -22,7 +22,11 @@
 
 You can check out my blog here: https://keertisurapaneni.medium.com/cloudguruchallenge-event-driven-python-on-aws-c1adbdec19ae
 
+
 Below is the architecture diagram of my pipeline:
 ![](images/CGC_ETL_Arch.png)
+
+
+Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/keerti-s-17629b74/)
 
 
