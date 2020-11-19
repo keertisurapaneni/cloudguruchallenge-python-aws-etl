@@ -6,7 +6,7 @@ on:
   push:
     paths-ignore:
       - '*.md'
-      - '*.pdf'
+      - 'images/**'
       - '.github/**' # Doesn't actually ignore for some reason
     branches:
       - master
