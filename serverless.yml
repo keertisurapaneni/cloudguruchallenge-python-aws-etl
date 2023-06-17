@@ -54,11 +54,11 @@ functions:
       sns_topic: !Ref NotifySNS
     layers:
       - {Ref: PythonEtlLambdaLayer} # Note the reference name is always the CamelCase version of the layer name with LambdaLayer suffix.
-    events:
-      - schedule:
-          name: ${self:service}
-          description: Insert data into the db table every 24 hours
-          rate: cron(0 21 * * ? *)
+    # events:
+    #   - schedule:
+    #       name: ${self:service}
+    #       description: Insert data into the db table every 24 hours
+    #       rate: cron(0 21 * * ? *)
 
 
 # Global package to create the lambda zip
